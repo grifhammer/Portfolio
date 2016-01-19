@@ -1,4 +1,6 @@
 <?php
+
+
 // Check for empty fields
 if(empty($_POST['name'])  		||
    empty($_POST['email']) 		||
@@ -14,13 +16,20 @@ $name = $_POST['name'];
 $email_address = $_POST['email'];
 $phone = $_POST['phone'];
 $message = $_POST['message'];
-	
-// Create the email and send the message
-$to = 'grifhammer@gmail.com'; 
-$email_subject = "Website Contact Form:  $name";
-$email_body = "Someone used your portfolio contact form.\n\n"."Here are the details:\n\nName: $name\n\nEmail: $email_address\n\nPhone: $phone\n\nMessage:\n$message";
-$headers = "From: noreply@griffinhammer.com\n"; 
-$headers .= "Reply-To: $email_address";	
-mail($to,$email_subject,$email_body,$headers);
-return true;			
+
+    require_once('/usr/share/php/libphp-phpmailer/class.phpmailer.php');
+    $mail = new PHPMailer(); // defaults to using php "mail()"
+    $mail->AddReplyTo($email,$name);
+    $mail->SetFrom($email, 'From '.$name);
+    $address = "grifhammer@gmail.com";
+    $mail->AddAddress($address, "Robert D Bunch");
+    $mail->Subject    = "Contact email from Portfolio";
+    $mail->MsgHTML($message);
+    if(!$mail->Send()) {
+       echo "Mailer Error: " . $mail->ErrorInfo;
+       return false
+    } else {
+    echo "Message sent!";
+    return true;
+    }
 ?>
